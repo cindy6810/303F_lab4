@@ -5,31 +5,40 @@
  */
 
 import React, { useState } from "react";
-import { View, StyleSheet } from "react-native";
-import ToDoList from "./ToDoList";
-import ToDoForm from "./ToDoForm";
+import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
+import ToDoForm from "./components/ToDoForm";
+import ToDoList from "./components/ToDoList";
 
 const App = () => {
-  const [tasks, setTasks] = useState([
-    "Buy groceries",
-    "Complete assignment",
-    "Walk the dog",
-  ]);
+  const [tasks, setTasks] = useState([]);
 
-  const addTask = (newTask) => {
-    setTasks([...tasks, newTask]);
+  const addTask = (taskText) => {
+    if (!taskText.trim() || tasks.includes(taskText.trim())) {
+      return false;
+    }
+    setTasks([...tasks, taskText.trim()]);
+    return true;
+  };
+
+  const removeTask = (index) => {
+    setTasks(tasks.filter((_, i) => i !== index));
   };
 
   return (
-    <View style={styles.container}>
-      <ToDoList tasks={tasks} />
-      <ToDoForm onAddTask={addTask} />
-    </View>
+    <div className="min-h-screen bg-gray-100 py-8">
+      <div className="max-w-2xl mx-auto px-4">
+        <Card>
+          <CardHeader>
+            <CardTitle>My Todo List</CardTitle>
+          </CardHeader>
+          <CardContent className="space-y-6">
+            <ToDoForm addTask={addTask} />
+            <ToDoList tasks={tasks} removeTask={removeTask} />
+          </CardContent>
+        </Card>
+      </div>
+    </div>
   );
 };
-
-const styles = StyleSheet.create({
-  container: { flex: 1, padding: 20 },
-});
 
 export default App;
