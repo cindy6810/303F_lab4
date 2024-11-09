@@ -1,38 +1,49 @@
 import React, { useState } from "react";
-import { View, TextInput, Button, StyleSheet } from "react-native";
+import { Input } from "@/components/ui/input";
+import { Button } from "@/components/ui/button";
+import { Alert, AlertDescription } from "@/components/ui/alert";
 
-const ToDoForm = ({ onAddTask }) => {
-  const [input, setInput] = useState("");
+const ToDoForm = ({ addTask }) => {
+  const [taskText, setTaskText] = useState("");
+  const [error, setError] = useState("");
 
-  const handleAddTask = () => {
-    if (input.trim()) {
-      onAddTask(input.trim());
-      setInput(""); // Clear the input after adding
+  const handleSubmit = (e) => {
+    e.preventDefault();
+
+    if (!taskText.trim()) {
+      setError("Task cannot be empty");
+      return;
+    }
+
+    const success = addTask(taskText);
+    if (success) {
+      setTaskText("");
+      setError("");
+    } else {
+      setError("This task already exists");
     }
   };
 
   return (
-    <View style={styles.form}>
-      <TextInput
-        style={styles.input}
-        placeholder="Add a new task"
-        value={input}
-        onChangeText={setInput}
-      />
-      <Button title="Add Task" onPress={handleAddTask} />
-    </View>
+    <form onSubmit={handleSubmit} className="space-y-4">
+      <div className="flex gap-2">
+        <Input
+          type="text"
+          placeholder="Add a new task..."
+          value={taskText}
+          onChange={(e) => setTaskText(e.target.value)}
+          className="flex-1"
+        />
+        <Button type="submit">Add Task</Button>
+      </div>
+      {error && (
+        <Alert variant="destructive">
+          <AlertDescription>{error}</AlertDescription>
+        </Alert>
+      )}
+    </form>
   );
 };
 
-const styles = StyleSheet.create({
-  form: { flexDirection: "row", alignItems: "center", marginTop: 20 },
-  input: {
-    flex: 1,
-    borderWidth: 1,
-    borderColor: "#ccc",
-    padding: 10,
-    marginRight: 10,
-  },
-});
-
 export default ToDoForm;
+
